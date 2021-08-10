@@ -7,9 +7,20 @@
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
 <body>
-<h2> Welcome to the index page, available to all users!</h2>
-<p th:if="${message}"> [[${message}]]</p>
-<a th:href="@{/admin}"> Admin page </a>
+<h2> Director List </h2>
+
+<div th:each="director: ${directors}">
+    <h2 th:text="${director.name}"></h2>
+    <h6 th:inline="text">specializing in [[${director.genre}]]</h6>
+    <ul>
+        <th:block th:each="movie: ${director.movies}">
+            <li th:inline="text"><b>[[${movie.title}]]</b> released in [[${movie.year}]]</li>
+        </th:block>
+    </ul>
+
+
+
+</div>
 <br>
 <form th:action="@{/logout}" method="post">
     <input type="submit" value="logout">

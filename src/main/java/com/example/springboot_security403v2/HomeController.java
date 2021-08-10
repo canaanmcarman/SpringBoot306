@@ -9,10 +9,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.jws.WebParam;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @Controller
 public class HomeController {
@@ -24,6 +27,21 @@ public class HomeController {
 
     @Autowired
     CloudinaryConfig cloudc;
+
+    @Autowired
+    MovieRepository movieRepository;
+
+    @Autowired
+    DirectorRepository directorRepository;
+
+    @RequestMapping("/")
+    public String index(Model model) {
+
+        // Grab all the director's from the database and display them here
+        model.addAttribute("directors", directorRepository.findAll());
+        return "index";
+
+    }
 
 
     @GetMapping("/register")
