@@ -1,21 +1,13 @@
 package com.example.springboot_security403v2;
 
-import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.jws.WebParam;
 import javax.validation.Valid;
-import java.io.IOException;
 import java.security.Principal;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 @Controller
 public class HomeController {
@@ -42,7 +34,51 @@ public class HomeController {
         return "index";
 
     }
+    @GetMapping("/addDirector")
+    public String addDirector(Model model) {
+        model.addAttribute("director", new Director());
+        return "directorform";
+    }
+    @PostMapping("/processDirector")
+    public String processDirector(@ModelAttribute Director director) {
+        directorRepository.save(director);
+        return "redirect:/";
+    }
+    @GetMapping("/addMovie")
+    public String addMovie(Model model) {
+        model.addAttribute("movie", new Movie());
+        model.addAttribute("directors", directorRepository.findAll());
+        return "movieform";
+    }
+    @PostMapping("/processMovie")
+    public String processMovie(@ModelAttribute Movie movie) {
+        movieRepository.save(movie);
+        return "redirect:/";
+    }
+    @RequestMapping("/updateMovie/{id}")
+    public String updateMovie(@PathVariable("id") long id, Model model) {
+        model.addAttribute("movie", movieRepository.findById(id).get());
+        model.addAttribute("directors", directorRepository.findAll());
+        return "movieform";
+    }
+    @RequestMapping("/deleteMovie/{id}")
+    public String deleteMovie(@PathVariable("id") long id) {
+        movieRepository.deleteById(id);
+        return "redirect:/";
+    }
 
+
+    @RequestMapping("/updateDirector/{id}")
+    public String updateDirector(@PathVariable("id") long id, Model model) {
+        model.addAttribute("director", directorRepository.findById(id).get());
+        return "directorform";
+    }
+
+    @RequestMapping("/deleteDirector/{id}")
+    public String deleteDirector(@PathVariable("id") long id) {
+        directorRepository.deleteById(id);
+        return "redirect:/";
+    }
 
     @GetMapping("/register")
     public String showRegistrationPage(Model model) {
