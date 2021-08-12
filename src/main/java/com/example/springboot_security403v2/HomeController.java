@@ -1,13 +1,17 @@
 package com.example.springboot_security403v2;
 
+import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.security.Principal;
+import java.util.Map;
 
 @Controller
 public class HomeController {
@@ -51,7 +55,21 @@ public class HomeController {
         return "movieform";
     }
     @PostMapping("/processMovie")
-    public String processMovie(@ModelAttribute Movie movie) {
+    public String processMovie(@ModelAttribute Movie movie, @RequestParam(name="moviePicture")MultipartFile file) {
+
+        if (file.isEmpty() && ( movie.getPhoto() != null || movie.getPhoto().isEmpty())) {
+            movie.setPhoto("https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Question_Mark.svg/1200px-Question_Mark.svg.png");
+        } else if(!file.isEmpty()){
+            try{
+                Map uploadResult= cloudc.upload(file.getBytes(), ObjectUtils.asMap("resourceType", "auto"));
+                movie.setPhoto(uploadResult.get("url").toString());
+
+
+            }catch (IOException e) {
+                e.printStackTrace();
+                return "redirect:/addMovie";
+            }
+        }
         movieRepository.save(movie);
         return "redirect:/";
     }
